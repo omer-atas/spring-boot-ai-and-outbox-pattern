@@ -1,0 +1,560 @@
+﻿openapi: 3.0.3
+info:
+title: Spring Boot Outbox Pattern API
+description: |
+Enterprise-grade Transactional Outbox Pattern implementation for reliable event delivery.
+## Features
+- ACID transaction guarantees
+- Automatic retry with exponential backoff
+- Dead letter queue for failed events
+- Comprehensive monitoring and metrics
+## Authentication
+All endpoints require JWT authentication.
+version: 1.0.0
+contact:
+name: Spring Boot Outbox Team
+email: support@example.com
+url: https://docs.example.com
+license:
+name: Apache 2.0
+url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.example.com/outbox/v1
+description: Production
+- url: https://api-staging.example.com/outbox/v1
+description: Staging
+- url: http://localhost:8080
+description: Local Development
+tags:
+- name: Transactions
+description: Transaction management endpoints
+- name: Outbox
+description: Outbox event management endpoints
+- name: Admin
+description: Administrative endpoints
+- name: Monitoring
+description: Health and metrics endpoints
+paths:
+/api/transactions:
+post:
+tags:
+- Transactions
+summary: Create a new transaction
+description: Creates a new transaction and corresponding outbox event atomically
+operationId: createTransaction
+requestBody:
+required: true
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/TransactionRequest'
+examples:
+standard:
+summary: Standard transaction
+value:
+transactionReference: "TXN-2024-001"
+customerId: "CUST-12345"
+amount: 1000.00
+currency: "USD"
+senderAccount: "ACC-111111"
+receiverAccount: "ACC-222222"
+description: "Payment for services"
+responses:
+'201':
+description: Transaction created successfully
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ApiResponse'
+'400':
+description: Invalid request
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ErrorResponse'
+'500':
+description: Internal server error
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ErrorResponse'
+security:
+- bearerAuth: []
+get:
+tags:
+- Transactions
+summary: Get all transactions
+description: Retrieves a paginated list of transactions
+operationId: getAllTransactions
+parameters:
+- name: page
+in: query
+description: Page number (0-indexed)
+schema:
+type: integer
+default: 0
+- name: size
+in: query
+description: Page size
+schema:
+type: integer
+default: 20
+maximum: 100
+- name: sort
+in: query
+description: Sort criteria (field,direction)
+schema:
+type: string
+default: "createdAt,desc"
+responses:
+'200':
+description: Successful operation
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/PagedTransactionResponse'
+security:
+- bearerAuth: []
+/api/transactions/{id}:
+get:
+tags:
+- Transactions
+summary: Get transaction by ID
+description: Retrieves a specific transaction by its ID
+operationId: getTransactionById
+parameters:
+- name: id
+in: path
+required: true
+description: Transaction ID
+schema:
+type: string
+format: uuid
+responses:
+'200':
+description: Successful operation
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ApiResponse'
+'404':
+description: Transaction not found
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ErrorResponse'
+security:
+- bearerAuth: []
+/api/transactions/{id}/status:
+put:
+tags:
+- Transactions
+summary: Update transaction status
+description: Updates the status of a transaction
+operationId: updateTransactionStatus
+parameters:
+- name: id
+in: path
+required: true
+description: Transaction ID
+schema:
+type: string
+format: uuid
+- name: status
+in: query
+required: true
+description: New status
+schema:
+type: string
+enum: [PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED]
+responses:
+'200':
+description: Status updated successfully
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/ApiResponse'
+'404':
+description: Transaction not found
+'400':
+description: Invalid status transition
+security:
+- bearerAuth: []
+/api/outbox/events:
+get:
+tags:
+- Outbox
+summary: Get outbox events
+description: Retrieves outbox events with optional filtering
+operationId: getOutboxEvents
+parameters:
+- name: status
+in: query
+description: Filter by status
+schema:
+type: string
+enum: [PENDING, PROCESSING, PROCESSED, FAILED, DEAD_LETTER]
+- name: eventType
+in: query
+description: Filter by event type
+schema:
+type: string
+- name: page
+in: query
+schema:
+type: integer
+default: 0
+- name: size
+in: query
+schema:
+type: integer
+default: 20
+responses:
+'200':
+description: Successful operation
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/PagedOutboxEventResponse'
+security:
+- bearerAuth: []
+/api/outbox/stats:
+get:
+tags:
+- Outbox
+summary: Get outbox statistics
+description: Retrieves current outbox statistics
+operationId: getOutboxStats
+responses:
+'200':
+description: Successful operation
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/OutboxStatsResponse'
+security:
+- bearerAuth: []
+/api/outbox/retry/{id}:
+post:
+tags:
+- Outbox
+summary: Retry failed event
+description: Manually triggers retry for a failed event
+operationId: retryEvent
+parameters:
+- name: id
+in: path
+required: true
+description: Event ID
+schema:
+type: string
+format: uuid
+responses:
+'200':
+description: Retry triggered successfully
+'404':
+description: Event not found
+'400':
+description: Event not eligible for retry
+security:
+- bearerAuth: []
+/api/outbox/process:
+post:
+tags:
+- Admin
+summary: Trigger manual processing
+description: Manually triggers processing of pending events
+operationId: triggerProcessing
+responses:
+'200':
+description: Processing triggered
+security:
+- bearerAuth: []
+/api/outbox/cleanup:
+delete:
+tags:
+- Admin
+summary: Cleanup old events
+description: Deletes old processed events
+operationId: cleanupOldEvents
+parameters:
+- name: retentionDays
+in: query
+required: true
+description: Number of days to retain
+schema:
+type: integer
+minimum: 1
+default: 30
+- name: batchSize
+in: query
+description: Batch size for deletion
+schema:
+type: integer
+default: 1000
+responses:
+'200':
+description: Cleanup completed
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/CleanupResponse'
+security:
+- bearerAuth: []
+/actuator/health:
+get:
+tags:
+- Monitoring
+summary: Health check
+description: Returns application health status
+operationId: healthCheck
+responses:
+'200':
+description: Application is healthy
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/HealthResponse'
+/actuator/prometheus:
+get:
+tags:
+- Monitoring
+summary: Prometheus metrics
+description: Returns metrics in Prometheus format
+operationId: prometheusMetrics
+responses:
+'200':
+description: Metrics retrieved successfully
+content:
+text/plain:
+schema:
+type: string
+components:
+schemas:
+TransactionRequest:
+type: object
+required:
+- transactionReference
+- customerId
+- amount
+- currency
+- senderAccount
+- receiverAccount
+properties:
+transactionReference:
+type: string
+description: Unique transaction reference
+example: "TXN-2024-001"
+customerId:
+type: string
+description: Customer identifier
+example: "CUST-12345"
+amount:
+type: number
+format: double
+minimum: 0.01
+description: Transaction amount
+example: 1000.00
+currency:
+type: string
+description: Currency code (ISO 4217)
+example: "USD"
+pattern: "^[A-Z]{3}$"
+senderAccount:
+type: string
+description: Sender account number
+example: "ACC-111111"
+receiverAccount:
+type: string
+description: Receiver account number
+example: "ACC-222222"
+description:
+type: string
+description: Transaction description
+maxLength: 500
+example: "Payment for services"
+TransactionResponse:
+type: object
+properties:
+id:
+type: string
+format: uuid
+transactionReference:
+type: string
+customerId:
+type: string
+amount:
+type: number
+format: double
+currency:
+type: string
+senderAccount:
+type: string
+receiverAccount:
+type: string
+description:
+type: string
+status:
+type: string
+enum: [PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED]
+createdAt:
+type: string
+format: date-time
+updatedAt:
+type: string
+format: date-time
+OutboxEvent:
+type: object
+properties:
+id:
+type: string
+format: uuid
+aggregateId:
+type: string
+eventType:
+type: string
+payload:
+type: string
+status:
+type: string
+enum: [PENDING, PROCESSING, PROCESSED, FAILED, DEAD_LETTER]
+retryCount:
+type: integer
+maxRetry:
+type: integer
+errorMessage:
+type: string
+kafkaTopic:
+type: string
+kafkaPartition:
+type: integer
+kafkaOffset:
+type: integer
+createdAt:
+type: string
+format: date-time
+processedAt:
+type: string
+format: date-time
+ApiResponse:
+type: object
+properties:
+success:
+type: boolean
+message:
+type: string
+data:
+type: object
+timestamp:
+type: string
+format: date-time
+PagedTransactionResponse:
+type: object
+properties:
+success:
+type: boolean
+data:
+type: object
+properties:
+content:
+type: array
+items:
+$ref: '#/components/schemas/TransactionResponse'
+pageable:
+type: object
+properties:
+pageNumber:
+type: integer
+pageSize:
+type: integer
+totalElements:
+type: integer
+totalPages:
+type: integer
+PagedOutboxEventResponse:
+type: object
+properties:
+success:
+type: boolean
+data:
+type: object
+properties:
+content:
+type: array
+items:
+$ref: '#/components/schemas/OutboxEvent'
+pageable:
+type: object
+OutboxStatsResponse:
+type: object
+properties:
+success:
+type: boolean
+data:
+type: object
+properties:
+pending:
+type: integer
+processing:
+type: integer
+processed:
+type: integer
+failed:
+type: integer
+deadLetter:
+type: integer
+totalEvents:
+type: integer
+CleanupResponse:
+type: object
+properties:
+success:
+type: boolean
+data:
+type: object
+properties:
+deletedCount:
+type: integer
+HealthResponse:
+type: object
+properties:
+status:
+type: string
+enum: [UP, DOWN, OUT_OF_SERVICE, UNKNOWN]
+components:
+type: object
+additionalProperties:
+type: object
+properties:
+status:
+type: string
+details:
+type: object
+ErrorResponse:
+type: object
+properties:
+success:
+type: boolean
+example: false
+message:
+type: string
+errors:
+type: array
+items:
+type: object
+properties:
+field:
+type: string
+message:
+type: string
+timestamp:
+type: string
+format: date-time
+securitySchemes:
+bearerAuth:
+type: http
+scheme: bearer
+bearerFormat: JWT
+description: JWT token authentication
+security:
+- bearerAuth: []

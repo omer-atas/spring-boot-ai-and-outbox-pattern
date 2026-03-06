@@ -1,0 +1,792 @@
+﻿{
+"annotations": {
+"list": [
+{
+"builtIn": 1,
+"datasource": "-- Grafana --",
+"enable": true,
+"hide": true,
+"iconColor": "rgba(0, 211, 255, 1)",
+"name": "Annotations & Alerts",
+"type": "dashboard"
+}
+]
+},
+"editable": true,
+"gnetId": null,
+"graphTooltip": 1,
+"id": null,
+"links": [],
+"panels": [
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "thresholds"
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+},
+{
+"color": "yellow",
+"value": 100
+},
+{
+"color": "red",
+"value": 500
+}
+]
+},
+"unit": "short"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 6,
+"x": 0,
+"y": 0
+},
+"id": 1,
+"options": {
+"orientation": "auto",
+"reduceOptions": {
+"values": false,
+"calcs": [
+"lastNotNull"
+],
+"fields": ""
+},
+"showThresholdLabels": false,
+"showThresholdMarkers": true,
+"text": {}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "outbox_events_pending_count",
+"refId": "A"
+}
+],
+"title": "Pending Events",
+"type": "gauge"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "short"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 18,
+"x": 6,
+"y": 0
+},
+"id": 2,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"lastNotNull"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "rate(outbox_events_processed_total[5m])",
+"legendFormat": "Processed",
+"refId": "A"
+},
+{
+"expr": "rate(outbox_events_failed_total[5m])",
+"legendFormat": "Failed",
+"refId": "B"
+}
+],
+"title": "Event Processing Rate",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+}
+},
+"mappings": []
+}
+},
+"gridPos": {
+"h": 8,
+"w": 8,
+"x": 0,
+"y": 8
+},
+"id": 3,
+"options": {
+"legend": {
+"displayMode": "table",
+"placement": "right",
+"values": [
+"value"
+]
+},
+"pieType": "pie",
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "outbox_events_by_status",
+"legendFormat": "{{status}}",
+"refId": "A"
+}
+],
+"title": "Event Status Distribution",
+"type": "piechart"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "smooth",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "s"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 16,
+"x": 8,
+"y": 8
+},
+"id": 4,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"max"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "histogram_quantile(0.50, rate(outbox_processing_duration_seconds_bucket[5m]))",
+"legendFormat": "p50",
+"refId": "A"
+},
+{
+"expr": "histogram_quantile(0.95, rate(outbox_processing_duration_seconds_bucket[5m]))",
+"legendFormat": "p95",
+"refId": "B"
+},
+{
+"expr": "histogram_quantile(0.99, rate(outbox_processing_duration_seconds_bucket[5m]))",
+"legendFormat": "p99",
+"refId": "C"
+}
+],
+"title": "Processing Duration Percentiles",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 20,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "bytes"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 0,
+"y": 16
+},
+"id": 5,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"max"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "jvm_memory_used_bytes{area='heap'}",
+"legendFormat": "Heap Used",
+"refId": "A"
+},
+{
+"expr": "jvm_memory_max_bytes{area='heap'}",
+"legendFormat": "Heap Max",
+"refId": "B"
+}
+],
+"title": "JVM Memory Usage",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+},
+{
+"color": "yellow",
+"value": 15
+},
+{
+"color": "red",
+"value": 18
+}
+]
+},
+"unit": "short"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 12,
+"y": 16
+},
+"id": 6,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"max"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "hikaricp_connections_active",
+"legendFormat": "Active",
+"refId": "A"
+},
+{
+"expr": "hikaricp_connections_idle",
+"legendFormat": "Idle",
+"refId": "B"
+},
+{
+"expr": "hikaricp_connections_max",
+"legendFormat": "Max",
+"refId": "C"
+},
+{
+"expr": "hikaricp_connections_pending",
+"legendFormat": "Pending",
+"refId": "D"
+}
+],
+"title": "Database Connection Pool",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "ops"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 0,
+"y": 24
+},
+"id": 7,
+"options": {
+"legend": {
+"calcs": [
+"mean"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "rate(kafka_producer_record_send_total[5m])",
+"legendFormat": "Records Sent",
+"refId": "A"
+},
+{
+"expr": "rate(kafka_producer_record_error_total[5m])",
+"legendFormat": "Errors",
+"refId": "B"
+}
+],
+"title": "Kafka Producer Metrics",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "thresholds"
+},
+"mappings": [
+{
+"options": {
+"0": {
+"text": "CLOSED",
+"color": "green"
+},
+"1": {
+"text": "OPEN",
+"color": "red"
+},
+"2": {
+"text": "HALF_OPEN",
+"color": "yellow"
+}
+},
+"type": "value"
+}
+],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+},
+{
+"color": "yellow",
+"value": 1
+},
+{
+"color": "red",
+"value": 2
+}
+]
+}
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 12,
+"y": 24
+},
+"id": 8,
+"options": {
+"orientation": "auto",
+"reduceOptions": {
+"values": false,
+"calcs": [
+"lastNotNull"
+],
+"fields": ""
+},
+"showThresholdLabels": false,
+"showThresholdMarkers": true,
+"text": {}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "resilience4j_circuitbreaker_state",
+"legendFormat": "{{name}}",
+"refId": "A"
+}
+],
+"title": "Circuit Breaker Status",
+"type": "gauge"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "reqps"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 0,
+"y": 32
+},
+"id": 9,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"max"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "multi"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "rate(http_server_requests_seconds_count{status=~'2..'}[5m])",
+"legendFormat": "2xx - {{uri}}",
+"refId": "A"
+},
+{
+"expr": "rate(http_server_requests_seconds_count{status=~'4..'}[5m])",
+"legendFormat": "4xx - {{uri}}",
+"refId": "B"
+},
+{
+"expr": "rate(http_server_requests_seconds_count{status=~'5..'}[5m])",
+"legendFormat": "5xx - {{uri}}",
+"refId": "C"
+}
+],
+"title": "HTTP Request Rate by Status",
+"type": "timeseries"
+},
+{
+"datasource": "Prometheus",
+"fieldConfig": {
+"defaults": {
+"color": {
+"mode": "palette-classic"
+},
+"custom": {
+"axisLabel": "",
+"axisPlacement": "auto",
+"barAlignment": 0,
+"drawStyle": "line",
+"fillOpacity": 10,
+"gradientMode": "none",
+"hideFrom": {
+"tooltip": false,
+"viz": false,
+"legend": false
+},
+"lineInterpolation": "linear",
+"lineWidth": 2,
+"pointSize": 5,
+"scaleDistribution": {
+"type": "linear"
+},
+"showPoints": "never",
+"spanNulls": true
+},
+"mappings": [],
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{
+"color": "green",
+"value": null
+}
+]
+},
+"unit": "percent"
+}
+},
+"gridPos": {
+"h": 8,
+"w": 12,
+"x": 12,
+"y": 32
+},
+"id": 10,
+"options": {
+"legend": {
+"calcs": [
+"mean",
+"max"
+],
+"displayMode": "table",
+"placement": "bottom"
+},
+"tooltip": {
+"mode": "single"
+}
+},
+"pluginVersion": "9.0.0",
+"targets": [
+{
+"expr": "process_cpu_usage * 100",
+"legendFormat": "CPU Usage",
+"refId": "A"
+},
+{
+"expr": "system_cpu_usage * 100",
+"legendFormat": "System CPU",
+"refId": "B"
+}
+],
+"title": "CPU Usage",
+"type": "timeseries"
+}
+],
+"refresh": "10s",
+"schemaVersion": 36,
+"style": "dark",
+"tags": [
+"outbox",
+"spring-boot",
+"kafka",
+"microservices"
+],
+"templating": {
+"list": []
+},
+"time": {
+"from": "now-1h",
+"to": "now"
+},
+"timepicker": {},
+"timezone": "browser",
+"title": "Outbox Pattern - Production Dashboard",
+"uid": "outbox-pattern-dashboard",
+"version": 1,
+"weekStart": ""
+}

@@ -1,0 +1,28 @@
+﻿# Build files
+target/
+*.class
+*.jar
+*.war
+# IDE files
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+# Version control
+.git/
+.gitignore
+# Documentation
+*.md
+docs/
+# Test files
+**/test/
+**/*Test.java
+# Local environment
+.env
+*.log
+logs/
+# OS files
+.DS_Store
+Thumbs.db

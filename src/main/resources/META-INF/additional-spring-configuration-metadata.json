@@ -1,0 +1,112 @@
+{
+  "groups": [
+    {
+      "name": "kafka.topics",
+      "description": "Custom Kafka topic name configuration."
+    },
+    {
+      "name": "kafka.consumer",
+      "description": "Custom Kafka consumer configuration (application-level, not Spring's spring.kafka.consumer)."
+    },
+    {
+      "name": "outbox.scheduler.pending",
+      "description": "Scheduler settings for processing PENDING outbox events."
+    },
+    {
+      "name": "outbox.scheduler.retry",
+      "description": "Scheduler settings for retrying FAILED outbox events."
+    },
+    {
+      "name": "outbox.scheduler.stuck",
+      "description": "Scheduler settings for detecting STUCK outbox events."
+    },
+    {
+      "name": "outbox.cleanup",
+      "description": "Cleanup scheduler settings for removing processed outbox events."
+    },
+    {
+      "name": "outbox.cleanup.dead-letter",
+      "description": "Cleanup scheduler settings for archiving dead-letter outbox events."
+    }
+  ],
+  "properties": [
+    {
+      "name": "kafka.topics.transactions",
+      "type": "java.lang.String",
+      "description": "Kafka topic name for transaction events.",
+      "defaultValue": "springboot.transactions"
+    },
+    {
+      "name": "kafka.topics.payments",
+      "type": "java.lang.String",
+      "description": "Kafka topic name for payment events.",
+      "defaultValue": "springboot.payments"
+    },
+    {
+      "name": "kafka.topics.embargo",
+      "type": "java.lang.String",
+      "description": "Kafka topic name for embargo events.",
+      "defaultValue": "springboot.embargo"
+    },
+    {
+      "name": "kafka.consumer.group-id",
+      "type": "java.lang.String",
+      "description": "Kafka consumer group ID used in @KafkaListener annotations.",
+      "defaultValue": "outbox-consumer-group"
+    },
+    {
+      "name": "outbox.scheduler.pending.fixed-delay",
+      "type": "java.lang.Long",
+      "description": "Fixed delay in milliseconds between executions of the pending events scheduler.",
+      "defaultValue": 5000
+    },
+    {
+      "name": "outbox.scheduler.pending.initial-delay",
+      "type": "java.lang.Long",
+      "description": "Initial delay in milliseconds before the first execution of the pending events scheduler.",
+      "defaultValue": 10000
+    },
+    {
+      "name": "outbox.scheduler.retry.fixed-delay",
+      "type": "java.lang.Long",
+      "description": "Fixed delay in milliseconds between executions of the failed events retry scheduler.",
+      "defaultValue": 60000
+    },
+    {
+      "name": "outbox.scheduler.retry.initial-delay",
+      "type": "java.lang.Long",
+      "description": "Initial delay in milliseconds before the first execution of the retry scheduler.",
+      "defaultValue": 30000
+    },
+    {
+      "name": "outbox.scheduler.stuck.fixed-delay",
+      "type": "java.lang.Long",
+      "description": "Fixed delay in milliseconds between executions of the stuck events detection scheduler.",
+      "defaultValue": 600000
+    },
+    {
+      "name": "outbox.scheduler.stuck.initial-delay",
+      "type": "java.lang.Long",
+      "description": "Initial delay in milliseconds before the first execution of the stuck events scheduler.",
+      "defaultValue": 60000
+    },
+    {
+      "name": "outbox.scheduler.stuck.threshold-minutes",
+      "type": "java.lang.Integer",
+      "description": "Age threshold in minutes after which an in-progress outbox event is considered stuck.",
+      "defaultValue": 30
+    },
+    {
+      "name": "outbox.cleanup.cron",
+      "type": "java.lang.String",
+      "description": "Cron expression for the processed events cleanup job.",
+      "defaultValue": "0 0 2 * * ?"
+    },
+    {
+      "name": "outbox.cleanup.dead-letter.cron",
+      "type": "java.lang.String",
+      "description": "Cron expression for the dead-letter events archive job.",
+      "defaultValue": "0 0 3 * * ?"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+spring:
+  # Production Database Configuration
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      leak-detection-threshold: 30000
+  # JPA Configuration for Production
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+  # Kafka Production Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      acks: all
+      retries: 5
+      compression-type: lz4
+    consumer:
+      max-poll-records: 500
+  # Flyway Production Configuration
+  flyway:
+    enabled: true
+
+# Outbox Production Configuration
+outbox:
+  scheduler:
+    enabled: true
+    pending:
+      fixed-delay: 3000
+    retry:
+      fixed-delay: 30000
+  cleanup:
+    retention-days: 30
+    batch-size: 5000
+
+# Actuator Production Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging Production Configuration
+logging:
+  level:
+    root: WARN
+    com.springboot.outbox: INFO
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+  file:
+    name: /var/log/outbox-pattern/application.log
+    max-size: 500MB
+    max-history: 90
+    total-size-cap: 10GB
+
+# Server Production Configuration
+server:
+  tomcat:
+    threads:
+      max: 400
+      min-spare: 50
+    max-connections: 20000

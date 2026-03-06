@@ -1,0 +1,281 @@
+﻿{
+"dashboard": {
+"title": "Outbox Pattern Monitoring",
+"tags": ["outbox", "spring-boot", "kafka"],
+"timezone": "browser",
+"refresh": "10s",
+"panels": [
+{
+"id": 1,
+"title": "Outbox Events Overview",
+"type": "stat",
+"gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+"targets": [
+{
+"expr": "outbox_events_pending_count",
+"legendFormat": "Pending",
+"refId": "A"
+}
+],
+"options": {
+"reduceOptions": {
+"values": false,
+"calcs": ["lastNotNull"]
+},
+"orientation": "auto",
+"textMode": "value_and_name",
+"colorMode": "value",
+"graphMode": "area"
+},
+"fieldConfig": {
+"defaults": {
+"color": { "mode": "thresholds" },
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{ "value": 0, "color": "green" },
+{ "value": 100, "color": "yellow" },
+{ "value": 500, "color": "red" }
+]
+}
+}
+}
+},
+{
+"id": 2,
+"title": "Processed Events",
+"type": "stat",
+"gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+"targets": [
+{
+"expr": "outbox_events_processed_total",
+"legendFormat": "Processed",
+"refId": "A"
+}
+]
+},
+{
+"id": 3,
+"title": "Failed Events",
+"type": "stat",
+"gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+"targets": [
+{
+"expr": "outbox_events_failed_total",
+"legendFormat": "Failed",
+"refId": "A"
+}
+],
+"fieldConfig": {
+"defaults": {
+"color": { "mode": "thresholds" },
+"thresholds": {
+"mode": "absolute",
+"steps": [
+{ "value": 0, "color": "green" },
+{ "value": 10, "color": "yellow" },
+{ "value": 50, "color": "red" }
+]
+}
+}
+}
+},
+{
+"id": 4,
+"title": "Dead Letter Queue",
+"type": "stat",
+"gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+"targets": [
+{
+"expr": "outbox_events_dead_letter_total",
+"legendFormat": "Dead Letter",
+"refId": "A"
+}
+]
+},
+{
+"id": 5,
+"title": "Event Processing Rate",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+"targets": [
+{
+"expr": "rate(outbox_events_processed_total[5m])",
+"legendFormat": "Processed/sec",
+"refId": "A"
+},
+{
+"expr": "rate(outbox_events_failed_total[5m])",
+"legendFormat": "Failed/sec",
+"refId": "B"
+}
+],
+"yaxes": [
+{
+"format": "ops",
+"label": "Events/sec"
+}
+]
+},
+{
+"id": 6,
+"title": "Event Status Distribution",
+"type": "piechart",
+"gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+"targets": [
+{
+"expr": "outbox_events_by_status",
+"legendFormat": "{{status}}",
+"refId": "A"
+}
+]
+},
+{
+"id": 7,
+"title": "Processing Duration (p95)",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+"targets": [
+{
+"expr": "histogram_quantile(0.95, rate(outbox_processing_duration_seconds_bucket[5m]))",
+"legendFormat": "p95",
+"refId": "A"
+},
+{
+"expr": "histogram_quantile(0.99, rate(outbox_processing_duration_seconds_bucket[5m]))",
+"legendFormat": "p99",
+"refId": "B"
+}
+],
+"yaxes": [
+{
+"format": "s",
+"label": "Duration"
+}
+]
+},
+{
+"id": 8,
+"title": "Retry Attempts",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+"targets": [
+{
+"expr": "rate(outbox_events_retry_total[5m])",
+"legendFormat": "Retries/sec",
+"refId": "A"
+}
+]
+},
+{
+"id": 9,
+"title": "JVM Memory Usage",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+"targets": [
+{
+"expr": "jvm_memory_used_bytes{area='heap'}",
+"legendFormat": "Heap Used",
+"refId": "A"
+},
+{
+"expr": "jvm_memory_max_bytes{area='heap'}",
+"legendFormat": "Heap Max",
+"refId": "B"
+}
+],
+"yaxes": [
+{
+"format": "bytes"
+}
+]
+},
+{
+"id": 10,
+"title": "Database Connection Pool",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+"targets": [
+{
+"expr": "hikaricp_connections_active",
+"legendFormat": "Active",
+"refId": "A"
+},
+{
+"expr": "hikaricp_connections_idle",
+"legendFormat": "Idle",
+"refId": "B"
+},
+{
+"expr": "hikaricp_connections_max",
+"legendFormat": "Max",
+"refId": "C"
+}
+]
+},
+{
+"id": 11,
+"title": "Kafka Producer Metrics",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+"targets": [
+{
+"expr": "rate(kafka_producer_record_send_total[5m])",
+"legendFormat": "Records Sent/sec",
+"refId": "A"
+},
+{
+"expr": "rate(kafka_producer_record_error_total[5m])",
+"legendFormat": "Errors/sec",
+"refId": "B"
+}
+]
+},
+{
+"id": 12,
+"title": "Circuit Breaker State",
+"type": "table",
+"gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+"targets": [
+{
+"expr": "resilience4j_circuitbreaker_state",
+"legendFormat": "{{name}} - {{state}}",
+"refId": "A",
+"format": "table"
+}
+]
+},
+{
+"id": 13,
+"title": "HTTP Request Rate",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+"targets": [
+{
+"expr": "rate(http_server_requests_seconds_count[5m])",
+"legendFormat": "{{uri}} - {{method}} - {{status}}",
+"refId": "A"
+}
+]
+},
+{
+"id": 14,
+"title": "HTTP Request Duration (p95)",
+"type": "graph",
+"gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+"targets": [
+{
+"expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m]))",
+"legendFormat": "{{uri}} - p95",
+"refId": "A"
+}
+],
+"yaxes": [
+{
+"format": "s"
+}
+]
+}
+]
+}
+}

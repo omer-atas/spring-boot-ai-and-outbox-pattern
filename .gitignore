@@ -1,0 +1,22 @@
+# Gizli bilgiler — asla commit edilmez
+.env
+*.env
+.env.local
+.env.*.local
+
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# Loglar
+logs/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.github/

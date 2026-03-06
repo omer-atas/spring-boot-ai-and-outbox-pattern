@@ -1,0 +1,104 @@
+﻿groups:
+- name: outbox_alerts
+interval: 30s
+rules:
+# High error rate alert
+- alert: HighErrorRate
+expr: rate(outbox_events_failed_total[5m]) > 10
+for: 5m
+labels:
+severity: warning
+component: outbox
+annotations:
+summary: "High error rate detected"
+description: "Outbox event failure rate is {{ $value }} events/sec"
+# Dead letter queue growing
+- alert: DeadLetterQueueGrowing
+expr: increase(outbox_events_dead_letter_total[1h]) > 100
+for: 10m
+labels:
+severity: critical
+component: outbox
+annotations:
+summary: "Dead letter queue is growing"
+description: "{{ $value }} events moved to dead letter queue in last hour"
+# High pending events
+- alert: HighPendingEvents
+expr: outbox_events_pending_count > 1000
+for: 15m
+labels:
+severity: warning
+component: outbox
+annotations:
+summary: "High number of pending events"
+description: "{{ $value }} events are pending processing"
+# Processing lag
+- alert: ProcessingLag
+expr: time() - outbox_events_oldest_pending_timestamp_seconds > 300
+for: 5m
+labels:
+severity: warning
+component: outbox
+annotations:
+summary: "Outbox processing lag detected"
+description: "Oldest pending event is {{ $value }}s old"
+# Database connection pool exhaustion
+- alert: DatabaseConnectionPoolExhausted
+expr: hikaricp_connections_active / hikaricp_connections_max > 0.9
+for: 5m
+labels:
+severity: critical
+component: database
+annotations:
+summary: "Database connection pool nearly exhausted"
+description: "{{ $value | humanizePercentage }} of connections in use"
+# High CPU usage
+- alert: HighCPUUsage
+expr: process_cpu_usage > 0.8
+for: 10m
+labels:
+severity: warning
+component: application
+annotations:
+summary: "High CPU usage"
+description: "CPU usage is {{ $value | humanizePercentage }}"
+# High memory usage
+- alert: HighMemoryUsage
+expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.9
+for: 5m
+labels:
+severity: warning
+component: application
+annotations:
+summary: "High memory usage"
+description: "JVM heap usage is {{ $value | humanizePercentage }}"
+# Application down
+- alert: ApplicationDown
+expr: up{job="outbox-application"} == 0
+for: 1m
+labels:
+severity: critical
+component: application
+annotations:
+summary: "Application is down"
+description: "Outbox application is not responding"
+# Kafka producer errors
+- alert: KafkaProducerErrors
+expr: rate(kafka_producer_record_error_total[5m]) > 1
+for: 5m
+labels:
+severity: warning
+component: kafka
+annotations:
+summary: "Kafka producer errors detected"
+description: "{{ $value }} Kafka producer errors per second"
+# Circuit breaker open
+- alert: CircuitBreakerOpen
+expr: resilience4j_circuitbreaker_state{state="open"} == 1
+for: 2m
+labels:
+severity: critical
+component: resilience
+annotations:
+summary: "Circuit breaker is open"
+description: "Circuit breaker {{ $labels.name }} is open"
